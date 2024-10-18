@@ -1,18 +1,26 @@
-export default function Post () {
-    return (
-        <div className="post">
-        <div className="image">
-          <img src="./public/ismael-abelleira-MZ00oma1sn0-unsplash.jpg" alt="" />
-        </div>
-        <div className="text">
-          <h2>Full-House battery backup coming later this year</h2>
-          <p className="info">
-            <a className="author">Akash Thakkar</a>
-            <time>2024-10-07 19:21</time>
-          </p>
-          <p className="sumary">Today at its special launch event, home backup power giant ecoflow launched a flurry new products including a whole home backup power solution</p>
-        </div>
-      </div>
+import { Link } from 'react-router-dom';
 
-    );
+import { formatISO9075 } from 'date-fns';
+
+export default function Post({ _id,title, summary, cover, content, createdAt, author }) {
+  return (
+    <div className="post">
+      <div className="image">
+        <Link to={`/post/${_id}`}>
+          <img src={'http://localhost:4000/' + cover} />
+        </Link>
+      </div>
+      <div className="text">
+        <Link to={`/post/${_id}`}>
+          <h2>{title}</h2>
+        </Link>
+        <p className="info">
+          <a className="author">{author.username}</a>
+          <time>{formatISO9075(new Date(createdAt))}</time>
+        </p>
+        <p className="sumary">{summary}</p>
+      </div>
+    </div>
+
+  );
 }

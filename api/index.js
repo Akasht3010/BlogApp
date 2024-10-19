@@ -104,13 +104,13 @@ app.post('/post', uploadMiddleware.single('file'), async (req, res) => {
 })
 
 app.put('/post', uploadMiddleware.single('file'), async (req, res) => {
-    let newPath = null
+    let newPath = null;
     if (req.file) {
         const { originalname, path } = req.file;
-        const parts = originalname.split('.')
+        const parts = originalname.split('.');
         const ext = parts[parts.length - 1];
-        newPath = path + '.' + ext
-        fs.renameSync(path, newPath)
+        newPath = path + '.' + ext;
+        fs.renameSync(path, newPath);
     }
 
     const { token } = req.cookies;
@@ -119,15 +119,21 @@ app.put('/post', uploadMiddleware.single('file'), async (req, res) => {
             return res.status(403).json({ error: 'Invalid token' });
         }
         const { id, title, summary, content } = req.body;
-        const postDoc = await Post.findById(id)
-        const isAuthor = JSON.stringify(postDoc.author) === JSON.stringify(info.id)
+        const postDoc = await Post.findById(id);
+        const isAuthor = JSON.stringify(postDoc.author) === JSON.stringify(info.id);
+
         if (!isAuthor) {
             return res.status(400).json({ error: 'Not the author' });
         }
-        await postDoc.update({ title, summary, content, cover: newpath ? newpath : postDoc.cover })
-        response.json(postDoc)
+
+        // Use set() and save() to update the document
+        postDoc.set({ title, summary, content, cover: newPath ? newPath : postDoc.cover });
+        await postDoc.save();
+
+        res.json(postDoc);
     });
-})
+});
+
 
 app.get('/post', async (req, res) => {
     res.json(
